@@ -1,4 +1,6 @@
+import 'package:drag_drop_gape/bloc/game_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:just_audio/just_audio.dart';
 
 import 'item_model.dart';
@@ -13,12 +15,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late List<ItemModel> items;
   late List<ItemModel> items2;
-  late int score;
   late bool gameOver;
   late AudioPlayer audioPlayer;
   initGame() {
     gameOver = false;
-    score = 0;
     items = [
       ItemModel(name: "lion", value: "Lion", img: "assets/lion.jpg"),
       ItemModel(name: "dogs", value: "Dogs", img: "assets/dogs.jpg"),
@@ -43,7 +43,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (items.isEmpty) gameOver = true;
+    if (items.length==1) gameOver = true;
+    return BlocBuilder<GameBloc, GameState>(
+  builder: (context, state) {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -59,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       TextSpan(
-                          text: "$score",
+                          text: "${state.score}",
                           style: Theme.of(context)
                               .textTheme
                               .headlineSmall
@@ -108,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             if (item.value == receivedItem.value) {
                               items.remove(receivedItem);
                               items2.remove(item);
-                              score += 10;
+                              BlocProvider.of<GameBloc>(context).add(const AddScoreEvent(score: 10));
                               item.accepting = false;
                                if(items.isNotEmpty){
                                  audioPlayer.setAsset("assets/win.wav");
@@ -121,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                               ///TODO true song
                             } else {
-                              score -= 5;
+                              BlocProvider.of<GameBloc>(context).add(const AddScoreEvent(score: -5));
                               item.accepting = false;
 
                               if(items.isNotEmpty){
@@ -134,7 +136,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               }
                               ///TODO false song
                             }
-                            setState(() {});
                           },
                           onWillAccept: (receivedItem) {
                             setState(() {
@@ -187,8 +188,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       IconButton(onPressed: () {
-                        initGame();
-                        setState(() {
+
+                        setState(() {  initGame();
                         });
                       }, icon: const Icon(Icons.restart_alt_sharp))
                     ],
@@ -200,5 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  },
+);
   }
 }

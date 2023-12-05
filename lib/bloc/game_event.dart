@@ -15,3 +15,8 @@ class RemoveEvent extends GameEvent{
   @override
   List<Object?> get props => [model];
 }
+class StateEvent extends GameEvent{
+  const StateEvent();
+  @override
+  List<Object?> get props => [];
+}

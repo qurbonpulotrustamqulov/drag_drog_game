@@ -21,6 +21,7 @@ part 'game_state.dart';
   GameBloc() : super(GameInitial(items: items,audioPlayer: AudioPlayer(), gameOver: false,    items2 : items2,score: 0)) {
     on<AddScoreEvent>(_addScore);
     on<RemoveEvent>(_removeItem);
+    on<StateEvent>(_setState);
   }
 
   void _addScore(AddScoreEvent event, Emitter emit){
@@ -42,5 +43,16 @@ part 'game_state.dart';
     bool gameOver = state.gameOver;
     emit(GameLoading(items: items, audioPlayer: audioPlayer, gameOver: gameOver, score: score, items2: items2));
     emit(RemoveItem(items: items, audioPlayer: audioPlayer, gameOver: gameOver, score: score, items2: items2));
+  }
+
+
+  void _setState(StateEvent event, Emitter emit){
+    int score= state.score;
+    List<ItemModel>items = state.items;
+    List<ItemModel>items2 = state.items2;
+    AudioPlayer audioPlayer = state.audioPlayer;
+    bool gameOver = state.gameOver;
+    emit(GameLoading(items: items, audioPlayer: audioPlayer, gameOver: gameOver, score: score, items2: items2));
+    emit(GameInitial(items: items, audioPlayer: audioPlayer, gameOver: gameOver, score: score, items2: items2));
   }
 }
